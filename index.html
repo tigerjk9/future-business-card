@@ -110,7 +110,13 @@
     </div>
 
     <div>
-      <label class="block text-sm font-semibold text-stone-300 mb-2">🧬 MBTI <span class="text-stone-500 font-normal">(선택)</span></label>
+      <div class="flex items-center justify-between mb-2 flex-wrap gap-2">
+        <label class="block text-sm font-semibold text-stone-300">🧬 MBTI <span class="text-stone-500 font-normal">(선택)</span></label>
+        <button type="button" id="open-mbti-test"
+                class="text-xs font-bold px-3 py-1.5 rounded-full bg-gradient-to-r from-violet-500/20 to-blue-500/20 border border-violet-400/40 text-violet-200 hover:border-violet-400 transition">
+          🧭 10문항 테스트로 알아보기 (1분)
+        </button>
+      </div>
       <div class="grid grid-cols-4 sm:grid-cols-8 gap-2" id="mbti-chips">
         <span class="chip" data-v="없음">없음</span>
         <span class="chip" data-v="ISTJ">ISTJ</span><span class="chip" data-v="ISFJ">ISFJ</span><span class="chip" data-v="INFJ">INFJ</span><span class="chip" data-v="INTJ">INTJ</span>
@@ -138,7 +144,7 @@
     </div>
 
     <div>
-      <label class="block text-sm font-semibold text-stone-300 mb-2">⭐ 나의 강점 <span class="text-stone-500 font-normal">(자유롭게 한 줄)</span></label>
+      <label class="block text-sm font-semibold text-stone-300 mb-2">⭐ 나의 강점 <span class="text-stone-500 font-normal">(MBTI 테스트 시 자동 입력 · 직접 수정 가능)</span></label>
       <input type="text" id="f-strength" class="field" placeholder="예: 새로운 아이디어를 잘 떠올리고 사람들과 공유합니다" maxlength="80" />
     </div>
 
@@ -222,6 +228,47 @@
     </div>
   </section>
 
+  <!-- ═══ MBTI TEST MODAL ═══ -->
+  <div id="mbti-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4" style="background: rgba(5,2,15,0.85); backdrop-filter: blur(8px);">
+    <div class="glass rounded-3xl p-6 md:p-8 w-full max-w-2xl max-h-[90vh] overflow-y-auto relative">
+      <button id="close-mbti" class="absolute top-4 right-4 w-9 h-9 rounded-full bg-white/5 hover:bg-white/15 border border-white/10 text-stone-300 hover:text-white">✕</button>
+
+      <!-- Test screen -->
+      <div id="mbti-test">
+        <span class="pill mb-3">🧭 빠른 MBTI 테스트</span>
+        <h2 class="text-2xl font-black mt-2 mb-1">10문항 · 약 1분</h2>
+        <p class="text-sm text-stone-400 mb-6">두 선택지 중 더 가까운 쪽을 골라주세요. 모두 답하면 결과가 자동으로 입력됩니다.</p>
+
+        <div id="mbti-questions" class="space-y-5"></div>
+
+        <div class="mt-6 flex items-center justify-between">
+          <p class="text-xs text-stone-500"><span id="mbti-answered">0</span> / 10 답변</p>
+          <button id="submit-mbti" disabled
+                  class="cta bg-gradient-to-r from-violet-500 via-blue-500 to-amber-400 text-white font-bold px-7 py-3 rounded-2xl shadow-lg disabled:opacity-40 disabled:cursor-not-allowed">
+            결과 보기 →
+          </button>
+        </div>
+      </div>
+
+      <!-- Result screen -->
+      <div id="mbti-result" class="hidden text-center">
+        <p class="pill mb-3">🎉 검사 결과</p>
+        <p class="text-stone-400 text-sm mt-2 mb-1">당신의 MBTI 유형은</p>
+        <p id="mbti-code" class="text-6xl font-black gradient-text my-4">XXXX</p>
+        <p id="mbti-name" class="text-xl font-bold text-amber-300">-</p>
+        <div class="glass rounded-2xl p-5 mt-5 text-left">
+          <p class="text-xs font-bold text-violet-300 mb-2">⭐ 자동 입력될 강점</p>
+          <p id="mbti-strength" class="text-stone-200 leading-relaxed">-</p>
+        </div>
+        <div class="mt-3 grid grid-cols-4 gap-2 text-xs" id="mbti-bars"></div>
+        <div class="mt-6 flex flex-wrap gap-3 justify-center">
+          <button id="apply-mbti" class="cta bg-gradient-to-r from-violet-500 via-blue-500 to-amber-400 text-white font-bold px-7 py-3 rounded-2xl shadow-lg">✅ 적용하기</button>
+          <button id="retry-mbti" class="cta bg-white/5 hover:bg-white/10 border border-white/10 text-stone-200 font-bold px-7 py-3 rounded-2xl">↻ 다시 하기</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <footer class="text-center text-stone-500 text-sm mt-20 pb-8">
     <p>Made by <a href="https://litt.ly/dot_connector" target="_blank" rel="noopener" class="text-violet-300 hover:underline">김진관 (닷커넥터)</a></p>
     <p class="mt-1 text-xs">Powered by Google Gemini 2.5 Flash · 진로 체험 시리즈</p>
@@ -233,6 +280,176 @@ const $ = id => document.getElementById(id);
 
 let mbtiSel = "없음";
 let interestsSel = new Set();
+
+// ═══════ MBTI 10-Q TEST ═══════
+const MBTI_QUESTIONS = [
+  { axis: "EI", a: { v: "E", text: "친구들과 함께 있을 때 에너지가 충전된다" },
+                b: { v: "I", text: "혼자만의 시간이 있어야 에너지가 회복된다" } },
+  { axis: "EI", a: { v: "E", text: "처음 만난 사람과도 빨리 친해지는 편이다" },
+                b: { v: "I", text: "친해지는 데에는 시간이 좀 필요하다" } },
+  { axis: "EI", a: { v: "E", text: "회의·수업에서 적극적으로 의견을 낸다" },
+                b: { v: "I", text: "생각을 정리한 뒤 조용히 말한다" } },
+  { axis: "SN", a: { v: "S", text: "구체적인 사실과 경험을 더 신뢰한다" },
+                b: { v: "N", text: "가능성과 미래의 큰 그림을 본다" } },
+  { axis: "SN", a: { v: "S", text: "매뉴얼·설명서를 차근차근 따라한다" },
+                b: { v: "N", text: "직관적으로 일단 시도해본다" } },
+  { axis: "SN", a: { v: "S", text: "지금 일어나고 있는 일에 집중한다" },
+                b: { v: "N", text: "이게 나중에 어떻게 될지 자주 상상한다" } },
+  { axis: "TF", a: { v: "T", text: "결정할 때 논리·객관적 분석을 우선한다" },
+                b: { v: "F", text: "사람의 감정과 가치를 더 우선한다" } },
+  { axis: "TF", a: { v: "T", text: "친구의 고민에 해결책을 먼저 제시한다" },
+                b: { v: "F", text: "공감하며 끝까지 들어주는 편이다" } },
+  { axis: "JP", a: { v: "J", text: "계획표를 세우고 그대로 실행하는 게 편하다" },
+                b: { v: "P", text: "그때그때 상황에 맞춰 유연하게 한다" } },
+  { axis: "JP", a: { v: "J", text: "마감 한참 전에 여유 있게 끝낸다" },
+                b: { v: "P", text: "마감 직전 집중력으로 폭발한다" } }
+];
+
+const MBTI_DATA = {
+  ISTJ: { name: "청렴결백한 논리주의자", strength: "책임감과 신중함으로 맡은 일을 끝까지 정확하게 완수합니다." },
+  ISFJ: { name: "용감한 수호자",         strength: "따뜻한 헌신과 세심한 배려로 주변 사람을 든든하게 지킵니다." },
+  INFJ: { name: "선의의 옹호자",         strength: "깊은 통찰과 진정성으로 사람과 가치를 의미 있게 연결합니다." },
+  INTJ: { name: "용의주도한 전략가",     strength: "장기적 비전과 분석력으로 큰 그림을 설계하고 실행합니다." },
+  ISTP: { name: "만능 재주꾼",           strength: "차분한 관찰과 효율적인 손길로 문제를 빠르게 풀어냅니다." },
+  ISFP: { name: "호기심 많은 예술가",     strength: "부드러운 감수성과 자기만의 미감으로 진심을 표현합니다." },
+  INFP: { name: "열정적인 중재자",       strength: "이상과 진정성으로 의미 있는 가치를 끈기 있게 추구합니다." },
+  INTP: { name: "논리적인 사색가",       strength: "끝없는 호기심과 명료한 논리로 본질의 답을 찾아냅니다." },
+  ESTP: { name: "모험을 즐기는 사업가",   strength: "현장의 행동력과 순발력으로 결과를 빠르게 만들어냅니다." },
+  ESFP: { name: "자유로운 영혼의 연예인", strength: "밝고 따뜻한 에너지로 주변 분위기를 즐겁게 살려냅니다." },
+  ENFP: { name: "재기발랄한 활동가",     strength: "열정과 영감으로 새로운 가능성을 사람들과 함께 펼칩니다." },
+  ENTP: { name: "뜨거운 논쟁을 즐기는 변론가", strength: "기발한 아이디어와 토론으로 새로운 변화를 이끌어냅니다." },
+  ESTJ: { name: "엄격한 관리자",         strength: "조직력과 결단으로 목표 달성에 집중하며 책임을 완수합니다." },
+  ESFJ: { name: "사교적인 외교관",       strength: "협력과 배려로 팀의 좋은 분위기를 만들어 함께 나아갑니다." },
+  ENFJ: { name: "정의로운 사회운동가",   strength: "영감을 주는 리더십으로 사람들의 잠재력을 끌어올립니다." },
+  ENTJ: { name: "대담한 통솔자",         strength: "전략적 비전과 추진력으로 큰 목표를 현실로 만들어냅니다." }
+};
+
+let mbtiAnswers = new Array(10).fill(null);
+let mbtiResult = null;
+
+const renderMbtiQuestions = () => {
+  const box = $("mbti-questions");
+  box.innerHTML = MBTI_QUESTIONS.map((q, i) => `
+    <div class="rounded-2xl bg-white/5 border border-white/10 p-4">
+      <p class="text-sm font-bold text-stone-300 mb-3"><span class="text-violet-300">Q${i+1}.</span> 더 가까운 쪽을 골라주세요</p>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+        <label class="mq-opt cursor-pointer rounded-xl border px-3 py-2.5 text-sm transition select-none"
+               data-i="${i}" data-v="${q.a.v}">
+          <input type="radio" name="mq${i}" value="${q.a.v}" class="hidden" />
+          <span>${q.a.text}</span>
+        </label>
+        <label class="mq-opt cursor-pointer rounded-xl border px-3 py-2.5 text-sm transition select-none"
+               data-i="${i}" data-v="${q.b.v}">
+          <input type="radio" name="mq${i}" value="${q.b.v}" class="hidden" />
+          <span>${q.b.text}</span>
+        </label>
+      </div>
+    </div>
+  `).join("");
+  // Apply default styles
+  box.querySelectorAll(".mq-opt").forEach(el => {
+    el.style.background = "rgba(255,255,255,0.04)";
+    el.style.borderColor = "rgba(255,255,255,0.1)";
+    el.style.color = "#c5b8a3";
+    el.addEventListener("click", () => {
+      const i = parseInt(el.dataset.i, 10);
+      mbtiAnswers[i] = el.dataset.v;
+      // Visual update for the pair
+      box.querySelectorAll(`.mq-opt[data-i="${i}"]`).forEach(o => {
+        if (o === el) {
+          o.style.background = "linear-gradient(135deg, rgba(167,139,250,0.25), rgba(96,165,250,0.2))";
+          o.style.borderColor = "rgba(167,139,250,0.6)";
+          o.style.color = "#f5f1e8";
+          o.style.fontWeight = "700";
+        } else {
+          o.style.background = "rgba(255,255,255,0.04)";
+          o.style.borderColor = "rgba(255,255,255,0.1)";
+          o.style.color = "#c5b8a3";
+          o.style.fontWeight = "400";
+        }
+      });
+      const answered = mbtiAnswers.filter(Boolean).length;
+      $("mbti-answered").textContent = answered;
+      $("submit-mbti").disabled = answered < 10;
+    });
+  });
+};
+
+const computeMbti = () => {
+  const tally = { E:0, I:0, S:0, N:0, T:0, F:0, J:0, P:0 };
+  mbtiAnswers.forEach((v) => { if (v) tally[v]++; });
+  const code =
+    (tally.E >= tally.I ? "E" : "I") +
+    (tally.S >= tally.N ? "S" : "N") +
+    (tally.T >= tally.F ? "T" : "F") +
+    (tally.J >= tally.P ? "J" : "P");
+  return { code, tally };
+};
+
+const showMbtiResult = () => {
+  const { code, tally } = computeMbti();
+  const data = MBTI_DATA[code];
+  mbtiResult = { code, ...data };
+  $("mbti-code").textContent = code;
+  $("mbti-name").textContent = data.name;
+  $("mbti-strength").textContent = data.strength;
+  // Mini bars: 4 axis preferences
+  const axes = [
+    { l: "E", r: "I", lv: tally.E, rv: tally.I, name: "외향" },
+    { l: "S", r: "N", lv: tally.S, rv: tally.N, name: "감각" },
+    { l: "T", r: "F", lv: tally.T, rv: tally.F, name: "사고" },
+    { l: "J", r: "P", lv: tally.J, rv: tally.P, name: "판단" }
+  ];
+  $("mbti-bars").innerHTML = axes.map(ax => {
+    const total = ax.lv + ax.rv || 1;
+    const lp = Math.round((ax.lv / total) * 100);
+    const rp = 100 - lp;
+    const winner = ax.lv >= ax.rv ? ax.l : ax.r;
+    return `
+      <div class="rounded-xl p-2 bg-white/5">
+        <p class="text-stone-400 mb-1">${ax.l} ${lp}% · ${rp}% ${ax.r}</p>
+        <div class="h-1.5 bg-white/10 rounded-full overflow-hidden flex">
+          <div style="width:${lp}%; background:${winner===ax.l?'linear-gradient(90deg,#a78bfa,#60a5fa)':'rgba(255,255,255,0.15)'};"></div>
+          <div style="width:${rp}%; background:${winner===ax.r?'linear-gradient(90deg,#60a5fa,#a78bfa)':'rgba(255,255,255,0.15)'};"></div>
+        </div>
+      </div>`;
+  }).join("");
+  $("mbti-test").classList.add("hidden");
+  $("mbti-result").classList.remove("hidden");
+};
+
+const openMbtiModal = () => {
+  mbtiAnswers = new Array(10).fill(null);
+  $("mbti-answered").textContent = 0;
+  $("submit-mbti").disabled = true;
+  $("mbti-result").classList.add("hidden");
+  $("mbti-test").classList.remove("hidden");
+  renderMbtiQuestions();
+  $("mbti-modal").classList.remove("hidden");
+  document.body.style.overflow = "hidden";
+};
+const closeMbtiModal = () => {
+  $("mbti-modal").classList.add("hidden");
+  document.body.style.overflow = "";
+};
+
+$("open-mbti-test").addEventListener("click", openMbtiModal);
+$("close-mbti").addEventListener("click", closeMbtiModal);
+$("submit-mbti").addEventListener("click", showMbtiResult);
+$("retry-mbti").addEventListener("click", openMbtiModal);
+$("apply-mbti").addEventListener("click", () => {
+  if (!mbtiResult) return;
+  // Apply MBTI chip
+  document.querySelectorAll("#mbti-chips .chip").forEach(c => {
+    c.classList.toggle("on", c.dataset.v === mbtiResult.code);
+  });
+  mbtiSel = mbtiResult.code;
+  // Apply strength
+  $("f-strength").value = mbtiResult.strength;
+  closeMbtiModal();
+  // Smooth scroll to strength field
+  $("f-strength").scrollIntoView({ behavior: "smooth", block: "center" });
+});
 
 document.querySelectorAll("#mbti-chips .chip").forEach(c => {
   c.addEventListener("click", () => {
