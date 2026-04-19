@@ -112,9 +112,18 @@
     font-size: 9px; font-weight: 800; color: #7c3aed; letter-spacing: 0.05em;
     background: rgba(167,139,250,0.05);
   }
-  .bc-corner { position: absolute; width: 24px; height: 24px; border: 2px solid rgba(96,165,250,0.4); }
-  .bc-corner.tl { top: 10px; left: 100px; border-right: none; border-bottom: none; }
-  .bc-corner.br { bottom: 10px; right: 60px; border-left: none; border-top: none; }
+  .bc-corner { position: absolute; width: 18px; height: 18px; border: 2px solid rgba(96,165,250,0.4); }
+  .bc-corner.tl { top: 8px; left: 138px; border-right: none; border-bottom: none; }
+  .bc-corner.br { bottom: 8px; right: 70px; border-left: none; border-top: none; }
+  .bc-skill-chip {
+    display: inline-block; padding: 2px 9px;
+    background: linear-gradient(135deg, rgba(167,139,250,0.18), rgba(96,165,250,0.18));
+    border: 1px solid rgba(167,139,250,0.4);
+    color: #4338ca; font-weight: 700; font-size: 9.5px;
+    border-radius: 999px; line-height: 1.4;
+  }
+  .bc-meta { font-size: 9px; color: #6b6080; line-height: 1.5; font-family: monospace; }
+  .bc-meta-icon { display: inline-block; width: 10px; color: #7c3aed; margin-right: 4px; }
 </style>
 </head>
 <body>
@@ -225,30 +234,45 @@
               <div id="bc-avatar" class="bc-avatar">F</div>
               <div class="bc-tag">FUTURE 2036</div>
             </div>
-            <div style="flex: 1; padding: 22px 26px; position: relative;">
+            <div style="flex: 1; padding: 14px 22px; position: relative; display: flex; flex-direction: column;">
               <span class="bc-corner tl"></span>
               <span class="bc-corner br"></span>
-              <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom: 6px;">
-                <div>
-                  <p id="bc-company" style="font-size: 11px; font-weight: 800; color:#7c3aed; letter-spacing: 0.15em; margin: 0;">VISIONARY LAB</p>
-                  <p id="bc-title" style="font-size: 14px; font-weight: 700; color:#3a2c5c; margin-top: 4px;">직책</p>
+
+              <!-- Top: company + dept / MBTI + year -->
+              <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                <div style="flex: 1; min-width: 0;">
+                  <p id="bc-company" style="font-size: 11px; font-weight: 800; color:#7c3aed; letter-spacing: 0.15em; margin: 0; line-height: 1.2;">VISIONARY LAB</p>
+                  <p id="bc-department" style="font-size: 9.5px; font-weight: 700; color:#9085a8; margin-top: 2px; line-height: 1.3;">팀/랩</p>
+                  <p id="bc-title" style="font-size: 13px; font-weight: 700; color:#3a2c5c; margin-top: 4px; line-height: 1.3;">직책</p>
                 </div>
-                <div style="text-align:right;">
-                  <span id="bc-mbti" style="display:inline-block; padding: 3px 9px; background: linear-gradient(135deg,#fde68a,#fbbf24); color:#3a2410; font-weight: 900; font-size: 10px; border-radius: 999px; letter-spacing: 0.1em;"></span>
-                  <p style="font-size: 9px; color:#9b9080; font-family: monospace; margin-top: 6px;">© 2036</p>
+                <div style="text-align:right; flex-shrink: 0; margin-left: 8px;">
+                  <span id="bc-mbti" style="display:inline-block; padding: 3px 9px; background: linear-gradient(135deg,#fde68a,#fbbf24); color:#3a2410; font-weight: 900; font-size: 10px; border-radius: 999px; letter-spacing: 0.1em; line-height: 1;"></span>
+                  <p style="font-size: 9px; color:#9b9080; font-family: monospace; margin-top: 5px; line-height: 1;">© 2036</p>
                 </div>
               </div>
-              <div style="text-align:center; margin: 14px 0 16px;">
-                <p id="bc-name" style="font-size: 36px; font-weight: 800; color:#1e1b4b; letter-spacing: -0.02em; margin: 0; line-height: 1.1; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: geometricPrecision;">이름</p>
-                <div style="width: 60px; height: 2px; background: linear-gradient(90deg,#a78bfa,#60a5fa); margin: 8px auto;"></div>
-                <p id="bc-slogan" style="font-size: 12px; font-style: italic; color:#5b5275; margin-top: 4px;">"슬로건"</p>
+
+              <!-- Center: name + tagline + slogan -->
+              <div style="text-align:center; margin: 10px 0 8px;">
+                <p id="bc-name" style="font-size: 32px; font-weight: 800; color:#1e1b4b; letter-spacing: -0.02em; margin: 0; line-height: 1.05; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: geometricPrecision;">이름</p>
+                <div style="width: 50px; height: 2px; background: linear-gradient(90deg,#a78bfa,#60a5fa); margin: 6px auto;"></div>
+                <p id="bc-slogan" style="font-size: 11.5px; font-style: italic; color:#5b5275; margin: 0; line-height: 1.35;">"슬로건"</p>
+                <p id="bc-tagline" style="font-size: 9px; font-weight: 600; color:#7c3aed; letter-spacing: 0.05em; margin-top: 3px; line-height: 1.3;">English Tagline Here</p>
               </div>
-              <div style="display:flex; justify-content:space-between; align-items:flex-end; font-size: 10px;">
-                <div style="color:#5b5275;">
-                  <p style="font-family: monospace; margin: 0;"><span style="color:#7c3aed; margin-right: 5px;">✉</span><span id="bc-email">name@future.io</span></p>
-                  <p style="font-family: monospace; margin-top: 3px;"><span style="color:#7c3aed; margin-right: 5px;">⊕</span><span id="bc-website">future.io</span></p>
+
+              <!-- Skills chips -->
+              <div id="bc-skills" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 4px; margin-bottom: 8px;"></div>
+
+              <!-- Bottom row: 3-col contact + meta + stamp -->
+              <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-top: auto;">
+                <div style="flex: 1; min-width: 0;">
+                  <p class="bc-meta" style="margin: 0;"><span class="bc-meta-icon">✉</span><span id="bc-email">name@future.io</span></p>
+                  <p class="bc-meta" style="margin-top: 2px;"><span class="bc-meta-icon">⊕</span><span id="bc-website">future.io</span></p>
                 </div>
-                <div class="bc-stamp">FUTURE<br/>2036</div>
+                <div style="flex: 1; min-width: 0; text-align: left; padding: 0 8px;">
+                  <p class="bc-meta" id="bc-award-row" style="margin: 0;"><span class="bc-meta-icon">🏆</span><span id="bc-award">수상</span></p>
+                  <p class="bc-meta" id="bc-address-row" style="margin-top: 2px;"><span class="bc-meta-icon">📍</span><span id="bc-address">주소</span></p>
+                </div>
+                <div class="bc-stamp" style="flex-shrink: 0;">FUTURE<br/>2036</div>
               </div>
             </div>
           </div>
@@ -563,11 +587,29 @@ const callGeminiText = async (prompt, key) => {
 
 const renderCard = (data) => {
   $("bc-company").textContent = (data.company || "FUTURE LAB").toUpperCase();
+  $("bc-department").textContent = data.department || "Future Studio";
   $("bc-title").textContent = data.title;
   $("bc-name").textContent = data.name;
   $("bc-slogan").textContent = `"${data.slogan}"`;
+  $("bc-tagline").textContent = data.tagline || "";
+  $("bc-tagline").style.display = data.tagline ? "block" : "none";
   $("bc-email").textContent = data.email;
   $("bc-website").textContent = data.website;
+  // Award + Address (선택, 없으면 줄 자체 숨김)
+  $("bc-award").textContent = data.award || "";
+  $("bc-address").textContent = data.address || "";
+  $("bc-award-row").style.display = data.award ? "block" : "none";
+  $("bc-address-row").style.display = data.address ? "block" : "none";
+  // Skills chips
+  const skillsHost = $("bc-skills");
+  skillsHost.innerHTML = "";
+  (data.skills || []).slice(0, 3).forEach(s => {
+    if (!s) return;
+    const chip = document.createElement("span");
+    chip.className = "bc-skill-chip";
+    chip.textContent = s;
+    skillsHost.appendChild(chip);
+  });
   const mbtiText = data.mbti && data.mbti !== "없음" ? data.mbti : "";
   $("bc-mbti").textContent = mbtiText;
   $("bc-mbti").style.display = mbtiText ? "inline-block" : "none";
@@ -632,19 +674,29 @@ $("generate-btn").addEventListener("click", async () => {
 규칙:
 1. company는 그 분야의 가상 미래 회사 이름 (한국어 또는 영어, 12자 이내, 트렌디하게)
 2. title은 직책 (한국어, 25자 이내, 기존에 없는 미래형 직책 OK 예: "AI 윤리 디자이너")
-3. slogan은 그 사람의 모토 한 문장 (한국어, 30자 이내, 따옴표 없이)
-4. email은 영문 + future.io 도메인 사용 (예: namekim@future.io)
-5. website는 영문 도메인 (예: minrae.lab)
-6. bioTitle은 "2036년 ___의 하루" 같은 형태 (한국어, 25자 이내)
-7. bio는 2036년 그가 보내는 하루를 1인칭 시점으로 묘사 (한국어, 200자 이상 350자 이내, 구체적인 장소·도구·동료·감정 포함, 따뜻하고 영감을 주는 톤)
-8. mbti는 입력된 MBTI 그대로 ("없음"이면 "")
-9. emoji는 직책(title)을 가장 잘 표현하는 단일 이모지 1개 (예: 디자이너→🎨, 의사→🩺, 우주비행사→🚀, 과학자→🔬, 개발자→💻, 교사→📚, 셰프→🍳, 작가→✍️, AI 연구자→🤖, 환경 디자이너→🌱, 음악가→🎵, 영화감독→🎬, 건축가→🏛️, 모르겠으면 💼). 반드시 "이모지 단일 문자 1개"만.
+3. department는 그 회사의 소속 팀/랩 이름 (한국어 또는 영어, 18자 이내, 예: "AI 윤리 & 포용 랩", "Future Learning Studio")
+4. slogan은 그 사람의 한국어 모토 (15~28자, 따옴표 없이)
+5. tagline은 같은 모토를 영문으로 짧게 (영문 4~7단어, 마침표 없이, 예: "Designing trust into tomorrow")
+6. skills는 그 사람의 핵심 역량 키워드 정확히 3개 배열 (각 항목 영문 또는 한글 8자 이내, 예: ["UX Strategy","AI Ethics","Education"])
+7. award는 그 사람이 받았을 만한 가상의 미래 수상 한 줄 (한국어, 25자 이내, 예: "2034 청년 혁신가상")
+8. address는 가상의 미래 사무실 주소 (한국어, 18자 이내, 예: "서울 성수 미래로 25")
+9. email은 영문 + future.io 도메인 (예: namekim@future.io)
+10. website는 영문 도메인 (예: minrae.lab)
+11. bioTitle은 "2036년 ___의 하루" 같은 형태 (한국어, 25자 이내)
+12. bio는 2036년 그가 보내는 하루를 1인칭 시점으로 묘사 (한국어, 200~350자, 구체적인 장소·도구·동료·감정 포함, 따뜻하고 영감을 주는 톤)
+13. mbti는 입력된 MBTI 그대로 ("없음"이면 "")
+14. emoji는 직책을 가장 잘 표현하는 단일 이모지 1개 (예: 디자이너→🎨, 의사→🩺, 우주비행사→🚀, 과학자→🔬, 개발자→💻, 교사→📚, 셰프→🍳, AI 연구자→🤖, 환경→🌱, 모르겠으면 💼). 반드시 단일 이모지 1개만.
 
 JSON 스키마:
 {
   "company": string,
+  "department": string,
   "title": string,
   "slogan": string,
+  "tagline": string,
+  "skills": [string, string, string],
+  "award": string,
+  "address": string,
   "email": string,
   "website": string,
   "bioTitle": string,

@@ -23,7 +23,9 @@
 - **3D 플립 카드** — 클릭 시 0.9s rotateY(180deg), 앞면=명함 / 뒷면=자서전
 - **프로필 사진 업로드** (선택) — 좌측 사이드바 90px 원형 아바타
 - **아바타 우선순위**: 사진 → AI 추천 직업 이모지(`data.emoji`) → 이름 첫 글자 (Gemini JSON에 emoji 필드, 추가 비용 0)
-- **Gemini Text JSON 모드** — 회사명/직책/슬로건/이메일/자서전/이모지를 한 번에 생성
+- **Gemini Text JSON 모드** — 한 번 호출로 15개 필드 생성:
+  `company, department, title, slogan, tagline(영문), skills[3], award, address, email, website, bioTitle, bio, mbti, emoji, name`
+- **명함 정보 밀도** — 빈 공간을 무의미한 장식이 아닌 정보적 가치로 채움 (부서/팀, 핵심 역량 칩 3개, 영문 태그라인, 가상 수상, 가상 주소)
 
 ## 신분 옵션
 - 초등학생 / 중학생 / 고등학생 / 대학생 / 직장인 / 기타 (초등학생 맨 앞)
