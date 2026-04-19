@@ -43,8 +43,46 @@
   .chip:hover { background: rgba(167,139,250,0.15); border-color: rgba(167,139,250,0.4); }
   .chip.on { background: linear-gradient(135deg, #a78bfa, #60a5fa); border-color: transparent; color: white; font-weight: 700; }
 
-  /* Business card (90x55mm at 300dpi = 1063x649). Use 1100x650 ≈ 1.7:1 */
-  .biz-card { aspect-ratio: 1.7/1; }
+  /* Business card (90x55mm). 1.7:1 */
+  #biz-preview { aspect-ratio: 1.7/1; padding: 0; overflow: hidden; background: #fcfaf3; color: #1a1208; }
+
+  /* Side accent bar (left vertical color band) */
+  .bc-sidebar { width: 90px; min-height: 100%; background: linear-gradient(160deg, #a78bfa 0%, #60a5fa 50%, #ffd86b 100%); position: relative; overflow: hidden; }
+  .bc-sidebar::before {
+    content: ""; position: absolute; inset: 0;
+    background: radial-gradient(circle at 30% 80%, rgba(255,255,255,0.35), transparent 50%);
+  }
+  .bc-sidebar::after {
+    content: ""; position: absolute; inset: 0;
+    background-image:
+      radial-gradient(circle at 25% 25%, rgba(255,255,255,0.4) 1.5px, transparent 2px),
+      radial-gradient(circle at 75% 60%, rgba(255,255,255,0.3) 1.5px, transparent 2px),
+      radial-gradient(circle at 35% 80%, rgba(255,255,255,0.25) 1px, transparent 1.5px);
+    background-size: 22px 22px, 30px 30px, 18px 18px;
+  }
+  .bc-logo {
+    position: absolute; top: 16px; left: 50%; transform: translateX(-50%);
+    width: 44px; height: 44px; border-radius: 50%;
+    background: rgba(255,255,255,0.95); color: #1a1208;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 900; font-size: 18px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  }
+  .bc-vertical-text {
+    position: absolute; bottom: 18px; left: 50%; transform: translateX(-50%) rotate(-90deg); transform-origin: center;
+    color: rgba(255,255,255,0.85); font-size: 9px; font-weight: 800; letter-spacing: 0.25em; white-space: nowrap;
+  }
+  .bc-stamp {
+    position: absolute; bottom: 14px; right: 14px;
+    width: 44px; height: 44px; border-radius: 50%;
+    border: 2px dashed rgba(167,139,250,0.5);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 9px; font-weight: 800; color: #7c3aed; letter-spacing: 0.05em;
+    background: rgba(167,139,250,0.05);
+  }
+  .bc-corner { position: absolute; width: 24px; height: 24px; border: 2px solid rgba(96,165,250,0.4); }
+  .bc-corner.tl { top: 10px; left: 100px; border-right: none; border-bottom: none; }
+  .bc-corner.br { bottom: 10px; right: 60px; border-left: none; border-top: none; }
 </style>
 </head>
 <body>
@@ -126,35 +164,45 @@
       <p class="text-stone-400 mt-2">AI가 만든 미래의 명함과 자서전입니다</p>
     </div>
 
-    <!-- Card preview -->
-    <div class="biz-card glass rounded-3xl p-6 md:p-10 max-w-2xl mx-auto relative overflow-hidden" id="biz-preview">
-      <!-- decorative -->
-      <div class="absolute top-0 right-0 w-40 h-40 rounded-full" style="background: radial-gradient(circle, rgba(167,139,250,0.4), transparent 70%); filter: blur(30px);"></div>
-      <div class="absolute bottom-0 left-0 w-32 h-32 rounded-full" style="background: radial-gradient(circle, rgba(96,165,250,0.4), transparent 70%); filter: blur(30px);"></div>
+    <!-- Card preview (실제 명함 디자인) -->
+    <div class="rounded-3xl max-w-2xl mx-auto shadow-2xl" id="biz-preview" style="display: flex; flex-direction: row;">
+      <!-- Left color sidebar -->
+      <div class="bc-sidebar">
+        <div id="bc-logo" class="bc-logo">F</div>
+        <div class="bc-vertical-text">© 2036 · FUTURE</div>
+      </div>
 
-      <div class="relative z-10 h-full flex flex-col justify-between">
-        <div class="flex items-start justify-between">
+      <!-- Main content -->
+      <div style="flex: 1; padding: 22px 26px; position: relative;">
+        <span class="bc-corner tl"></span>
+        <span class="bc-corner br"></span>
+
+        <!-- Top row: company + year -->
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom: 6px;">
           <div>
-            <p id="bc-company" class="text-xs md:text-sm font-bold text-violet-300 tracking-widest mb-1">- COMPANY -</p>
-            <p id="bc-title" class="text-base md:text-xl font-bold text-stone-300">직책</p>
+            <p id="bc-company" style="font-size: 11px; font-weight: 800; color:#7c3aed; letter-spacing: 0.15em; margin: 0;">VISIONARY LAB</p>
+            <p id="bc-title" style="font-size: 14px; font-weight: 700; color:#3a2c5c; margin-top: 4px;">직책</p>
           </div>
-          <div id="bc-year" class="text-xs md:text-sm text-stone-400 font-mono">© 2036</div>
+          <div style="text-align:right;">
+            <span id="bc-mbti" style="display:inline-block; padding: 3px 9px; background: linear-gradient(135deg,#fde68a,#fbbf24); color:#3a2410; font-weight: 900; font-size: 10px; border-radius: 999px; letter-spacing: 0.1em;"></span>
+            <p style="font-size: 9px; color:#9b9080; font-family: monospace; margin-top: 6px;">© 2036</p>
+          </div>
         </div>
 
-        <div class="text-center my-4">
-          <p id="bc-name" class="text-3xl md:text-5xl font-black gradient-text">이름</p>
-          <p id="bc-slogan" class="mt-2 text-sm md:text-base italic text-stone-300">"슬로건"</p>
+        <!-- Center: name + slogan -->
+        <div style="text-align:center; margin: 14px 0 16px;">
+          <p id="bc-name" style="font-size: 38px; font-weight: 900; color:#1e1b4b; letter-spacing: -0.02em; margin: 0; line-height: 1;">이름</p>
+          <div style="width: 60px; height: 2px; background: linear-gradient(90deg,#a78bfa,#60a5fa); margin: 8px auto;"></div>
+          <p id="bc-slogan" style="font-size: 12px; font-style: italic; color:#5b5275; margin-top: 4px;">"슬로건"</p>
         </div>
 
-        <div class="flex items-end justify-between text-xs text-stone-400">
-          <div>
-            <p id="bc-email" class="font-mono">name@future.io</p>
-            <p id="bc-website" class="font-mono mt-0.5">future.dot-connector.io</p>
+        <!-- Bottom row: contact -->
+        <div style="display:flex; justify-content:space-between; align-items:flex-end; font-size: 10px;">
+          <div style="color:#5b5275;">
+            <p style="font-family: monospace; margin: 0;"><span style="color:#7c3aed; margin-right: 5px;">✉</span><span id="bc-email">name@future.io</span></p>
+            <p style="font-family: monospace; margin-top: 3px;"><span style="color:#7c3aed; margin-right: 5px;">⊕</span><span id="bc-website">future.io</span></p>
           </div>
-          <div class="text-right">
-            <p class="text-stone-500">FUTURE BUSINESS CARD</p>
-            <p id="bc-mbti" class="text-amber-300 font-bold mt-0.5"></p>
-          </div>
+          <div class="bc-stamp">FUTURE<br/>2036</div>
         </div>
       </div>
     </div>
@@ -220,13 +268,18 @@ const callGeminiText = async (prompt, key) => {
 };
 
 const renderCard = (data) => {
-  $("bc-company").textContent = `— ${data.company} —`;
+  $("bc-company").textContent = (data.company || "FUTURE LAB").toUpperCase();
   $("bc-title").textContent = data.title;
   $("bc-name").textContent = data.name;
   $("bc-slogan").textContent = `"${data.slogan}"`;
   $("bc-email").textContent = data.email;
   $("bc-website").textContent = data.website;
-  $("bc-mbti").textContent = data.mbti && data.mbti !== "없음" ? data.mbti : "";
+  const mbtiText = data.mbti && data.mbti !== "없음" ? data.mbti : "";
+  $("bc-mbti").textContent = mbtiText;
+  $("bc-mbti").style.display = mbtiText ? "inline-block" : "none";
+  // Logo initial = first character of name
+  const firstChar = (data.name || "F").charAt(0).toUpperCase();
+  $("bc-logo").textContent = firstChar;
   $("bio-title").textContent = data.bioTitle;
   $("bio-text").textContent = data.bio;
   $("result-section").classList.remove("hidden");
@@ -304,15 +357,9 @@ JSON 스키마:
 $("regenerate").addEventListener("click", () => $("generate-btn").click());
 $("reset-form").addEventListener("click", () => location.reload());
 
-// Download card as PNG using html-to-canvas approach via SVG foreignObject
+// Download card as PNG using html2canvas (이름 그라디언트 색 섞임 방지: onclone에서 단색으로 변환)
 $("dl-card").addEventListener("click", async () => {
   const node = $("biz-preview");
-  const rect = node.getBoundingClientRect();
-  const scale = 2;
-  const w = Math.round(rect.width * scale);
-  const h = Math.round(rect.height * scale);
-
-  // Use html2canvas dynamically loaded
   if (!window.html2canvas) {
     await new Promise((res, rej) => {
       const s = document.createElement("script");
@@ -321,7 +368,41 @@ $("dl-card").addEventListener("click", async () => {
       document.head.appendChild(s);
     });
   }
-  const canvas = await window.html2canvas(node, { scale: 2, backgroundColor: "#0a0613", useCORS: true, logging: false });
+  const canvas = await window.html2canvas(node, {
+    scale: 3,
+    backgroundColor: "#fcfaf3",
+    useCORS: true,
+    logging: false,
+    onclone: (doc) => {
+      // 1) gradient-text 류는 모두 단색 처리 (html2canvas는 -webkit-background-clip:text 미지원)
+      doc.querySelectorAll(".gradient-text").forEach(el => {
+        el.style.background = "none";
+        el.style.backgroundImage = "none";
+        el.style.webkitBackgroundClip = "initial";
+        el.style.backgroundClip = "initial";
+        el.style.webkitTextFillColor = "initial";
+        el.style.color = "#7c3aed";
+        el.style.animation = "none";
+      });
+      // 2) 명함 내부의 모든 텍스트 요소도 안전 처리
+      const cloned = doc.getElementById("biz-preview");
+      if (cloned) {
+        cloned.querySelectorAll("*").forEach(el => {
+          const cs = doc.defaultView.getComputedStyle(el);
+          if (cs.webkitTextFillColor === "rgba(0, 0, 0, 0)" || cs.webkitBackgroundClip === "text") {
+            el.style.background = "none";
+            el.style.backgroundImage = "none";
+            el.style.webkitBackgroundClip = "initial";
+            el.style.backgroundClip = "initial";
+            el.style.webkitTextFillColor = "initial";
+            el.style.color = "#1e1b4b";
+          }
+          // gshift 애니메이션 제거 (캡처 시점에 background-position이 random일 수 있음)
+          el.style.animation = "none";
+        });
+      }
+    }
+  });
   const link = document.createElement("a");
   link.download = `future_card_${(lastInput?.name || "me").replace(/\s+/g,"_")}.png`;
   link.href = canvas.toDataURL("image/png");
