@@ -44,7 +44,33 @@
   .chip.on { background: linear-gradient(135deg, #a78bfa, #60a5fa); border-color: transparent; color: white; font-weight: 700; }
 
   /* Business card (90x55mm). 1.7:1 */
+  /* Flip container — perspective wrapper */
+  .flip-wrap { perspective: 1800px; max-width: 38rem; margin: 0 auto; }
+  .flip-card { position: relative; width: 100%; aspect-ratio: 1.7/1; transform-style: preserve-3d; transition: transform 0.9s cubic-bezier(.2,.85,.3,1); cursor: pointer; }
+  .flip-card.flipped { transform: rotateY(180deg); }
+  .flip-front, .flip-back {
+    position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden;
+    border-radius: 24px; overflow: hidden; box-shadow: 0 30px 70px -20px rgba(0,0,0,0.6);
+  }
+  .flip-back { transform: rotateY(180deg); }
+  .flip-hint { text-align: center; margin-top: 12px; color: #c5b8a3; font-size: 12px; opacity: 0.7; }
+
   #biz-preview { aspect-ratio: 1.7/1; padding: 0; overflow: hidden; background: #fcfaf3; color: #1a1208; }
+  #biz-back {
+    aspect-ratio: 1.7/1; background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%);
+    color: #f5f1e8; padding: 22px 26px; position: relative; overflow: hidden;
+  }
+  #biz-back::before {
+    content: ""; position: absolute; top: -40px; right: -40px; width: 180px; height: 180px;
+    border-radius: 50%; background: radial-gradient(circle, rgba(255,216,107,0.35), transparent 65%);
+    filter: blur(20px);
+  }
+  #biz-back::after {
+    content: ""; position: absolute; bottom: -50px; left: -50px; width: 200px; height: 200px;
+    border-radius: 50%; background: radial-gradient(circle, rgba(167,139,250,0.4), transparent 65%);
+    filter: blur(25px);
+  }
+  .back-quote-mark { font-family: Georgia, serif; font-size: 64px; line-height: 0.5; color: rgba(255,216,107,0.6); }
 
   /* Side accent bar (left vertical color band) */
   .bc-sidebar { width: 90px; min-height: 100%; background: linear-gradient(160deg, #a78bfa 0%, #60a5fa 50%, #ffd86b 100%); position: relative; overflow: hidden; }
@@ -170,54 +196,62 @@
       <p class="text-stone-400 mt-2">AI가 만든 미래의 명함과 자서전입니다</p>
     </div>
 
-    <!-- Card preview (실제 명함 디자인) -->
-    <div class="rounded-3xl max-w-2xl mx-auto shadow-2xl" id="biz-preview" style="display: flex; flex-direction: row;">
-      <!-- Left color sidebar -->
-      <div class="bc-sidebar">
-        <div id="bc-logo" class="bc-logo">F</div>
-        <div class="bc-vertical-text">© 2036 · FUTURE</div>
+    <!-- Flip card: 앞=명함 / 뒤=자서전 -->
+    <div class="flip-wrap">
+      <div id="flip-card" class="flip-card">
+        <!-- FRONT -->
+        <div class="flip-front">
+          <div id="biz-preview" style="display: flex; flex-direction: row; height: 100%;">
+            <div class="bc-sidebar">
+              <div id="bc-logo" class="bc-logo">F</div>
+              <div class="bc-vertical-text">© 2036 · FUTURE</div>
+            </div>
+            <div style="flex: 1; padding: 22px 26px; position: relative;">
+              <span class="bc-corner tl"></span>
+              <span class="bc-corner br"></span>
+              <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom: 6px;">
+                <div>
+                  <p id="bc-company" style="font-size: 11px; font-weight: 800; color:#7c3aed; letter-spacing: 0.15em; margin: 0;">VISIONARY LAB</p>
+                  <p id="bc-title" style="font-size: 14px; font-weight: 700; color:#3a2c5c; margin-top: 4px;">직책</p>
+                </div>
+                <div style="text-align:right;">
+                  <span id="bc-mbti" style="display:inline-block; padding: 3px 9px; background: linear-gradient(135deg,#fde68a,#fbbf24); color:#3a2410; font-weight: 900; font-size: 10px; border-radius: 999px; letter-spacing: 0.1em;"></span>
+                  <p style="font-size: 9px; color:#9b9080; font-family: monospace; margin-top: 6px;">© 2036</p>
+                </div>
+              </div>
+              <div style="text-align:center; margin: 14px 0 16px;">
+                <p id="bc-name" style="font-size: 38px; font-weight: 900; color:#1e1b4b; letter-spacing: -0.02em; margin: 0; line-height: 1;">이름</p>
+                <div style="width: 60px; height: 2px; background: linear-gradient(90deg,#a78bfa,#60a5fa); margin: 8px auto;"></div>
+                <p id="bc-slogan" style="font-size: 12px; font-style: italic; color:#5b5275; margin-top: 4px;">"슬로건"</p>
+              </div>
+              <div style="display:flex; justify-content:space-between; align-items:flex-end; font-size: 10px;">
+                <div style="color:#5b5275;">
+                  <p style="font-family: monospace; margin: 0;"><span style="color:#7c3aed; margin-right: 5px;">✉</span><span id="bc-email">name@future.io</span></p>
+                  <p style="font-family: monospace; margin-top: 3px;"><span style="color:#7c3aed; margin-right: 5px;">⊕</span><span id="bc-website">future.io</span></p>
+                </div>
+                <div class="bc-stamp">FUTURE<br/>2036</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- BACK -->
+        <div class="flip-back">
+          <div id="biz-back">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; position: relative; z-index: 2;">
+              <p style="font-size: 10px; font-weight: 800; color:#fde68a; letter-spacing: 0.2em;">📖 MY 2036 STORY</p>
+              <p style="font-size: 9px; color:rgba(255,255,255,0.5); font-family: monospace;">PERSONAL DIARY</p>
+            </div>
+            <p id="bio-title-flip" style="font-size: 16px; font-weight: 800; color:#fde68a; margin-top: 8px; position:relative; z-index:2;">제목</p>
+            <div style="margin-top: 10px; position:relative; z-index:2;">
+              <span class="back-quote-mark">"</span>
+              <p id="bio-text-flip" style="font-size: 11.5px; line-height: 1.6; color:#e5e1ee; margin-top: -10px; padding-left: 4px; padding-right: 4px;"></p>
+            </div>
+            <p style="position:absolute; bottom: 14px; right: 22px; font-size: 9px; color:rgba(255,255,255,0.6); font-family: monospace; z-index: 2;">— 2036.04.19 —</p>
+          </div>
+        </div>
       </div>
-
-      <!-- Main content -->
-      <div style="flex: 1; padding: 22px 26px; position: relative;">
-        <span class="bc-corner tl"></span>
-        <span class="bc-corner br"></span>
-
-        <!-- Top row: company + year -->
-        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom: 6px;">
-          <div>
-            <p id="bc-company" style="font-size: 11px; font-weight: 800; color:#7c3aed; letter-spacing: 0.15em; margin: 0;">VISIONARY LAB</p>
-            <p id="bc-title" style="font-size: 14px; font-weight: 700; color:#3a2c5c; margin-top: 4px;">직책</p>
-          </div>
-          <div style="text-align:right;">
-            <span id="bc-mbti" style="display:inline-block; padding: 3px 9px; background: linear-gradient(135deg,#fde68a,#fbbf24); color:#3a2410; font-weight: 900; font-size: 10px; border-radius: 999px; letter-spacing: 0.1em;"></span>
-            <p style="font-size: 9px; color:#9b9080; font-family: monospace; margin-top: 6px;">© 2036</p>
-          </div>
-        </div>
-
-        <!-- Center: name + slogan -->
-        <div style="text-align:center; margin: 14px 0 16px;">
-          <p id="bc-name" style="font-size: 38px; font-weight: 900; color:#1e1b4b; letter-spacing: -0.02em; margin: 0; line-height: 1;">이름</p>
-          <div style="width: 60px; height: 2px; background: linear-gradient(90deg,#a78bfa,#60a5fa); margin: 8px auto;"></div>
-          <p id="bc-slogan" style="font-size: 12px; font-style: italic; color:#5b5275; margin-top: 4px;">"슬로건"</p>
-        </div>
-
-        <!-- Bottom row: contact -->
-        <div style="display:flex; justify-content:space-between; align-items:flex-end; font-size: 10px;">
-          <div style="color:#5b5275;">
-            <p style="font-family: monospace; margin: 0;"><span style="color:#7c3aed; margin-right: 5px;">✉</span><span id="bc-email">name@future.io</span></p>
-            <p style="font-family: monospace; margin-top: 3px;"><span style="color:#7c3aed; margin-right: 5px;">⊕</span><span id="bc-website">future.io</span></p>
-          </div>
-          <div class="bc-stamp">FUTURE<br/>2036</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Bio -->
-    <div class="glass rounded-3xl p-6 md:p-8 max-w-2xl mx-auto">
-      <p class="pill mb-3">📖 미래 자서전</p>
-      <h3 class="text-lg font-bold gradient-text mb-3" id="bio-title">2036년 어느 날, 나의 하루</h3>
-      <p id="bio-text" class="text-stone-200 leading-relaxed text-sm md:text-base"></p>
+      <p class="flip-hint">💡 명함을 클릭하면 뒷면으로 전환됩니다</p>
     </div>
 
     <!-- Actions -->
@@ -497,11 +531,19 @@ const renderCard = (data) => {
   // Logo initial = first character of name
   const firstChar = (data.name || "F").charAt(0).toUpperCase();
   $("bc-logo").textContent = firstChar;
-  $("bio-title").textContent = data.bioTitle;
-  $("bio-text").textContent = data.bio;
+  $("bio-title-flip").textContent = data.bioTitle;
+  $("bio-text-flip").textContent = data.bio;
+  // Reset flip state
+  $("flip-card").classList.remove("flipped");
   $("result-section").classList.remove("hidden");
   $("result-section").scrollIntoView({ behavior: "smooth", block: "start" });
 };
+
+// Flip on click
+document.addEventListener("DOMContentLoaded", () => {
+  const fc = document.getElementById("flip-card");
+  if (fc) fc.addEventListener("click", () => fc.classList.toggle("flipped"));
+});
 
 let lastInput = null;
 
@@ -576,6 +618,10 @@ $("reset-form").addEventListener("click", () => location.reload());
 
 // Download card as PNG using html2canvas (이름 그라디언트 색 섞임 방지: onclone에서 단색으로 변환)
 $("dl-card").addEventListener("click", async () => {
+  // 캡처 시 항상 앞면 기준으로 (뒷면 캡처 시 거울상으로 나오기 때문)
+  const wasFlipped = $("flip-card").classList.contains("flipped");
+  if (wasFlipped) $("flip-card").classList.remove("flipped");
+  await new Promise(r => setTimeout(r, 50));
   const node = $("biz-preview");
   if (!window.html2canvas) {
     await new Promise((res, rej) => {
@@ -624,6 +670,7 @@ $("dl-card").addEventListener("click", async () => {
   link.download = `future_card_${(lastInput?.name || "me").replace(/\s+/g,"_")}.png`;
   link.href = canvas.toDataURL("image/png");
   link.click();
+  if (wasFlipped) $("flip-card").classList.add("flipped");
 });
 </script>
 </body>
