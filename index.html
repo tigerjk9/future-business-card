@@ -571,11 +571,16 @@ const renderCard = (data) => {
   const mbtiText = data.mbti && data.mbti !== "없음" ? data.mbti : "";
   $("bc-mbti").textContent = mbtiText;
   $("bc-mbti").style.display = mbtiText ? "inline-block" : "none";
-  // Avatar: 사진이 있으면 사진, 없으면 이니셜
+  // Avatar 우선순위: 사진 → AI가 추천한 직업 이모지 → 이름 첫 글자
   const firstChar = (data.name || "F").charAt(0).toUpperCase();
   const avatar = $("bc-avatar");
+  avatar.style.cssText = ""; // reset inline style
   if (profilePhoto) {
     avatar.innerHTML = `<img src="${profilePhoto}" alt="profile" />`;
+  } else if (data.emoji && /\p{Emoji}/u.test(data.emoji)) {
+    avatar.textContent = data.emoji;
+    avatar.style.fontSize = "48px";
+    avatar.style.lineHeight = "1";
   } else {
     avatar.textContent = firstChar;
   }
@@ -633,6 +638,7 @@ $("generate-btn").addEventListener("click", async () => {
 6. bioTitle은 "2036년 ___의 하루" 같은 형태 (한국어, 25자 이내)
 7. bio는 2036년 그가 보내는 하루를 1인칭 시점으로 묘사 (한국어, 200자 이상 350자 이내, 구체적인 장소·도구·동료·감정 포함, 따뜻하고 영감을 주는 톤)
 8. mbti는 입력된 MBTI 그대로 ("없음"이면 "")
+9. emoji는 직책(title)을 가장 잘 표현하는 단일 이모지 1개 (예: 디자이너→🎨, 의사→🩺, 우주비행사→🚀, 과학자→🔬, 개발자→💻, 교사→📚, 셰프→🍳, 작가→✍️, AI 연구자→🤖, 환경 디자이너→🌱, 음악가→🎵, 영화감독→🎬, 건축가→🏛️, 모르겠으면 💼). 반드시 "이모지 단일 문자 1개"만.
 
 JSON 스키마:
 {
@@ -644,6 +650,7 @@ JSON 스키마:
   "bioTitle": string,
   "bio": string,
   "mbti": string,
+  "emoji": string,
   "name": "${name}"
 }`;
 
