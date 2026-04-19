@@ -239,7 +239,7 @@
                 </div>
               </div>
               <div style="text-align:center; margin: 14px 0 16px;">
-                <p id="bc-name" style="font-size: 38px; font-weight: 900; color:#1e1b4b; letter-spacing: -0.02em; margin: 0; line-height: 1;">이름</p>
+                <p id="bc-name" style="font-size: 36px; font-weight: 800; color:#1e1b4b; letter-spacing: -0.02em; margin: 0; line-height: 1.1; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: geometricPrecision;">이름</p>
                 <div style="width: 60px; height: 2px; background: linear-gradient(90deg,#a78bfa,#60a5fa); margin: 8px auto;"></div>
                 <p id="bc-slogan" style="font-size: 12px; font-style: italic; color:#5b5275; margin-top: 4px;">"슬로건"</p>
               </div>
@@ -669,9 +669,11 @@ $("dl-card").addEventListener("click", async () => {
   // 캡처 시 항상 앞면 기준으로 (뒷면 캡처 시 거울상으로 나오기 때문)
   const wasFlipped = $("flip-card").classList.contains("flipped");
   if (wasFlipped) $("flip-card").classList.remove("flipped");
-  // 폰트 로드 완료 대기 + 2 frame reflow
+  // 폰트 로드 완료 대기 + 캡처 직전에 800 weight 한글을 강제 트리거 (fake bold 방지)
   if (document.fonts && document.fonts.ready) {
     try { await document.fonts.ready; } catch (e) {}
+    // Pretendard 800 weight를 한글 문자로 명시적 로드 (lazy loading 대응)
+    try { await document.fonts.load("800 36px Pretendard", "김가나다라마바사아자차카타파하"); } catch (e) {}
   }
   await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
   const node = $("biz-preview");
@@ -694,6 +696,20 @@ $("dl-card").addEventListener("click", async () => {
       const cn = doc.getElementById("biz-preview");
       if (cn) {
         cn.style.fontFamily = "'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', system-ui, sans-serif";
+      }
+      // 이름 텍스트는 weight 800으로 명시 + fake bold 방지
+      const nameEl = doc.getElementById("bc-name");
+      if (nameEl) {
+        nameEl.style.fontFamily = "'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif";
+        nameEl.style.fontWeight = "800";
+        nameEl.style.color = "#1e1b4b";
+        nameEl.style.background = "none";
+        nameEl.style.backgroundImage = "none";
+        nameEl.style.webkitBackgroundClip = "initial";
+        nameEl.style.webkitTextFillColor = "initial";
+        nameEl.style.webkitFontSmoothing = "antialiased";
+        nameEl.style.textShadow = "none";
+        nameEl.style.textRendering = "geometricPrecision";
       }
       // 1) gradient-text 류는 모두 단색 처리 (html2canvas는 -webkit-background-clip:text 미지원)
       doc.querySelectorAll(".gradient-text").forEach(el => {
