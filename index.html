@@ -72,31 +72,37 @@
   }
   .back-quote-mark { font-family: Georgia, serif; font-size: 64px; line-height: 0.5; color: rgba(255,216,107,0.6); }
 
-  /* Side accent bar (left vertical color band) */
-  .bc-sidebar { width: 90px; min-height: 100%; background: linear-gradient(160deg, #a78bfa 0%, #60a5fa 50%, #ffd86b 100%); position: relative; overflow: hidden; }
+  /* Side accent bar — 더 넓게(130px) + 사진 영역 강조 */
+  .bc-sidebar { width: 130px; flex-shrink: 0; min-height: 100%; background: linear-gradient(160deg, #a78bfa 0%, #60a5fa 50%, #ffd86b 100%); position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 12px 0; }
   .bc-sidebar::before {
     content: ""; position: absolute; inset: 0;
     background: radial-gradient(circle at 30% 80%, rgba(255,255,255,0.35), transparent 50%);
+    pointer-events: none;
   }
   .bc-sidebar::after {
     content: ""; position: absolute; inset: 0;
     background-image:
-      radial-gradient(circle at 25% 25%, rgba(255,255,255,0.4) 1.5px, transparent 2px),
-      radial-gradient(circle at 75% 60%, rgba(255,255,255,0.3) 1.5px, transparent 2px),
-      radial-gradient(circle at 35% 80%, rgba(255,255,255,0.25) 1px, transparent 1.5px);
-    background-size: 22px 22px, 30px 30px, 18px 18px;
+      radial-gradient(circle at 20% 20%, rgba(255,255,255,0.35) 1.5px, transparent 2px),
+      radial-gradient(circle at 80% 50%, rgba(255,255,255,0.25) 1.5px, transparent 2px),
+      radial-gradient(circle at 30% 85%, rgba(255,255,255,0.2) 1px, transparent 1.5px);
+    background-size: 24px 24px, 30px 30px, 18px 18px;
+    pointer-events: none;
   }
-  .bc-logo {
-    position: absolute; top: 16px; left: 50%; transform: translateX(-50%);
-    width: 44px; height: 44px; border-radius: 50%;
+  /* 프로필 영역 (사진 또는 이니셜) */
+  .bc-avatar {
+    position: relative; z-index: 2;
+    width: 90px; height: 90px; border-radius: 50%;
     background: rgba(255,255,255,0.95); color: #1a1208;
     display: flex; align-items: center; justify-content: center;
-    font-weight: 900; font-size: 18px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    font-weight: 900; font-size: 38px; line-height: 1;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.25), inset 0 0 0 3px rgba(255,255,255,0.6);
+    overflow: hidden;
   }
-  .bc-vertical-text {
-    position: absolute; bottom: 18px; left: 50%; transform: translateX(-50%) rotate(-90deg); transform-origin: center;
-    color: rgba(255,255,255,0.85); font-size: 9px; font-weight: 800; letter-spacing: 0.25em; white-space: nowrap;
+  .bc-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .bc-tag {
+    position: relative; z-index: 2;
+    margin-top: 10px; padding: 3px 10px; border-radius: 999px;
+    background: rgba(0,0,0,0.25); color: #fff; font-size: 9px; font-weight: 800; letter-spacing: 0.15em;
   }
   .bc-stamp {
     position: absolute; bottom: 14px; right: 14px;
@@ -131,8 +137,21 @@
     <div>
       <label class="block text-sm font-semibold text-stone-300 mb-2">🎓 현재 신분</label>
       <select id="f-status" class="field">
-        <option>중학생</option><option>고등학생</option><option>대학생</option><option>직장인</option><option>기타</option>
+        <option>초등학생</option><option>중학생</option><option>고등학생</option><option>대학생</option><option>직장인</option><option>기타</option>
       </select>
+    </div>
+
+    <div>
+      <label class="block text-sm font-semibold text-stone-300 mb-2">📷 프로필 사진 <span class="text-stone-500 font-normal">(선택 · 명함 좌측에 표시됩니다)</span></label>
+      <div class="flex items-center gap-3 flex-wrap">
+        <label for="f-photo" class="cta cursor-pointer inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-stone-200 text-sm font-semibold">
+          📷 사진 선택
+        </label>
+        <input id="f-photo" type="file" accept="image/*" class="hidden" />
+        <span id="photo-status" class="text-xs text-stone-500">사진을 올리지 않으면 이니셜이 표시됩니다</span>
+        <button type="button" id="clear-photo" class="hidden text-xs text-rose-300 hover:text-rose-200 underline">사진 지우기</button>
+      </div>
+      <img id="photo-preview" alt="" class="hidden mt-3 w-20 h-20 rounded-full object-cover border-2 border-violet-400/50" />
     </div>
 
     <div>
@@ -203,8 +222,8 @@
         <div class="flip-front">
           <div id="biz-preview" style="display: flex; flex-direction: row; height: 100%;">
             <div class="bc-sidebar">
-              <div id="bc-logo" class="bc-logo">F</div>
-              <div class="bc-vertical-text">© 2036 · FUTURE</div>
+              <div id="bc-avatar" class="bc-avatar">F</div>
+              <div class="bc-tag">FUTURE 2036</div>
             </div>
             <div style="flex: 1; padding: 22px 26px; position: relative;">
               <span class="bc-corner tl"></span>
@@ -314,6 +333,30 @@ const $ = id => document.getElementById(id);
 
 let mbtiSel = "없음";
 let interestsSel = new Set();
+let profilePhoto = null; // dataURL
+
+// ─── Photo upload ───
+$("f-photo").addEventListener("change", (e) => {
+  const f = e.target.files[0];
+  if (!f) return;
+  if (f.size > 4 * 1024 * 1024) { alert("사진은 4MB 이하만 가능합니다"); return; }
+  const reader = new FileReader();
+  reader.onload = () => {
+    profilePhoto = reader.result;
+    $("photo-preview").src = profilePhoto;
+    $("photo-preview").classList.remove("hidden");
+    $("photo-status").textContent = "✓ 사진이 추가됩니다";
+    $("clear-photo").classList.remove("hidden");
+  };
+  reader.readAsDataURL(f);
+});
+$("clear-photo").addEventListener("click", () => {
+  profilePhoto = null;
+  $("photo-preview").classList.add("hidden");
+  $("f-photo").value = "";
+  $("photo-status").textContent = "사진을 올리지 않으면 이니셜이 표시됩니다";
+  $("clear-photo").classList.add("hidden");
+});
 
 // ═══════ MBTI 10-Q TEST ═══════
 const MBTI_QUESTIONS = [
@@ -528,9 +571,14 @@ const renderCard = (data) => {
   const mbtiText = data.mbti && data.mbti !== "없음" ? data.mbti : "";
   $("bc-mbti").textContent = mbtiText;
   $("bc-mbti").style.display = mbtiText ? "inline-block" : "none";
-  // Logo initial = first character of name
+  // Avatar: 사진이 있으면 사진, 없으면 이니셜
   const firstChar = (data.name || "F").charAt(0).toUpperCase();
-  $("bc-logo").textContent = firstChar;
+  const avatar = $("bc-avatar");
+  if (profilePhoto) {
+    avatar.innerHTML = `<img src="${profilePhoto}" alt="profile" />`;
+  } else {
+    avatar.textContent = firstChar;
+  }
   $("bio-title-flip").textContent = data.bioTitle;
   $("bio-text-flip").textContent = data.bio;
   // Reset flip state
@@ -621,7 +669,11 @@ $("dl-card").addEventListener("click", async () => {
   // 캡처 시 항상 앞면 기준으로 (뒷면 캡처 시 거울상으로 나오기 때문)
   const wasFlipped = $("flip-card").classList.contains("flipped");
   if (wasFlipped) $("flip-card").classList.remove("flipped");
-  await new Promise(r => setTimeout(r, 50));
+  // 폰트 로드 완료 대기 + 2 frame reflow
+  if (document.fonts && document.fonts.ready) {
+    try { await document.fonts.ready; } catch (e) {}
+  }
+  await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
   const node = $("biz-preview");
   if (!window.html2canvas) {
     await new Promise((res, rej) => {
@@ -636,7 +688,13 @@ $("dl-card").addEventListener("click", async () => {
     backgroundColor: "#fcfaf3",
     useCORS: true,
     logging: false,
+    imageTimeout: 0,
     onclone: (doc) => {
+      // 폰트 fallback 명시
+      const cn = doc.getElementById("biz-preview");
+      if (cn) {
+        cn.style.fontFamily = "'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', system-ui, sans-serif";
+      }
       // 1) gradient-text 류는 모두 단색 처리 (html2canvas는 -webkit-background-clip:text 미지원)
       doc.querySelectorAll(".gradient-text").forEach(el => {
         el.style.background = "none";
