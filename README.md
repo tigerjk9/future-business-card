@@ -83,7 +83,7 @@
 
 | 분류 | 기술 |
 |------|------|
-| **AI 모델** | Google **Gemini 2.5 Flash** (`gemini-2.5-flash`, JSON 응답 강제) |
+| **AI 모델** | Google **Gemini 3.5 Flash-Lite** (`gemini-3.5-flash-lite`, JSON 응답 강제) |
 | **명함 캡처** | [html2canvas](https://html2canvas.hertzen.com/) 1.4.1 (동적 로드) |
 | **프론트엔드** | Vanilla JavaScript (단일 `index.html` 파일) |
 | **스타일링** | Tailwind CSS (CDN) + 글래스/오로라 디자인 |
@@ -208,7 +208,7 @@ future-business-card/
 
 ## 🙏 크레딧
 
-- **Google Gemini 2.5 Flash** — 텍스트 생성 (JSON 모드)
+- **Google Gemini 3.5 Flash-Lite** — 텍스트 생성 (JSON 모드)
 - **html2canvas** — 클라이언트 사이드 명함 PNG 캡처
 - **Tailwind CSS** · **Pretendard**
 

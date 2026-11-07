@@ -10,7 +10,7 @@
 ## 기술 스택
 - 단일 `index.html` (Vanilla JS)
 - Tailwind CSS CDN + Pretendard + html2canvas 1.4.1
-- Gemini 2.5 Flash Text (`gemini-2.5-flash`, JSON 모드, temperature 0.95)
+- Gemini 3.5 Flash-Lite Text (`gemini-3.5-flash-lite`, JSON 모드)
 
 ## 핵심 데이터 구조
 - `MBTI_QUESTIONS[]`: 10문항 (E/I × 3, S/N × 3, T/F × 2, J/P × 2) + 각 선택지의 axis value
