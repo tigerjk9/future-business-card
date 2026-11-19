@@ -10,6 +10,7 @@
 ## 기술 스택
 - 단일 `index.html` (Vanilla JS)
 - Tailwind CSS CDN + Pretendard + html2canvas 1.4.1
+- three.js 0.169.0 (import map, 결과 화면이 처음 나올 때 동적 로드) — 3D 명함 미리보기
 - Gemini 3.5 Flash-Lite Text (`gemini-3.5-flash-lite`, JSON 모드)
 
 ## 핵심 데이터 구조
@@ -35,8 +36,11 @@
 - **세로 회전 텍스트 잘림:** `transform: rotate(-90deg)` 텍스트가 카드 밖으로 → 가로 배지로 교체 (`.bc-tag`)
 - **그라디언트 텍스트 색 섞임:** html2canvas는 `-webkit-background-clip:text` 미지원 → onclone에서 단색 치환
 - **뒷면 캡처 시 거울상:** PNG 다운로드 직전 항상 앞면으로 토글 후 캡처
+- **html2canvas 글자 처짐:** baseline을 실제보다 아래로 잡아 배지·태그·밑줄·이모지가 어긋남 → `fixCardClone(doc)`이 캡처용 복제본에서만 글자를 위로 올림(PNG `onclone`과 3D 텍스처 공용, 배율 `H2C_TEXT_SHIFT` 1.75는 크롬 실측)
+- **3D 명함:** 텍스처는 `#biz-preview`·`#biz-back`을 html2canvas로 그린 것(내용 바뀌면 `card:rendered`로 다시 그림). 3D가 켜지면 DOM 명함은 `clip`으로 숨기되 크기는 유지 — PNG 저장은 계속 DOM에서
 
 ## 변경 핵심 이력
+- 2026-11-19: three.js 3D 명함(뒤집기·좌우 밀기·기울여 보기) + html2canvas 글자 처짐 보정
 - 2026-04-19: 초기 출시 → MBTI 10문항 + 강점 자동 입력 → 3D 플립 카드 → 프로필 사진 업로드 + 사이드바 확장 → 이름 fake bold 수정
 
 ## 관련 문서
